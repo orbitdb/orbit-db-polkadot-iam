@@ -1,0 +1,32 @@
+{
+  "name": "substrate-acl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx webpack",
+    "start": "npm run build; live-server --no-browser public",
+    "test": "nyc mocha --exit"
+  },
+  "keywords": ["orbitdb", "ipfs"],
+  "author": "Mark Henderson <mark@mrh.io>",
+  "license": "MIT",
+  "dependencies": {
+    "@polkadot/api": "^4.7.2",
+    "ipfs": "^0.54.4",
+    "orbit-db": "^0.26.1",
+    "process": "^0.11.10"
+  },
+  "devDependencies": {
+    "assert-browserify": "^2.0.0",
+    "live-server": "^1.2.1",
+    "mocha": "^8.3.2",
+    "nyc": "^15.1.0",
+    "path-browserify": "^1.0.1",
+    "rimraf": "^3.0.2",
+    "standard": "^16.0.3",
+    "stream-browserify": "^3.0.0",
+    "webpack": "^5.35.1",
+    "webpack-cli": "^4.6.0"
+  }
+}
