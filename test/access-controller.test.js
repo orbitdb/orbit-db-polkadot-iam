@@ -1,30 +1,27 @@
 const assert = require('assert')
-const PolkadotAccess = require('../src/polkadot-access')
-const PolkadotIdentities = require('../src/polkadot-identities')
+const PolkadotIAM = require('../src/orbit-db-polkadot-iam')
 const OrbitDB = require('orbit-db')
 const IPFS = require('ipfs')
 const Keystore = require('orbit-db-keystore')
 const { createIdentity } = require('./utils')
-const rmrf = require('rimraf')
+// const rmrf = require('rimraf')
 
 const IPFSConfig = { Addresses: { Swarm: [] }, Bootstrap: [] }
 
 describe('Access Controller', function () {
   this.timeout(10000)
 
-  let orbitdb, ipfs, identity, identities, access, keystore
+  let orbitdb, ipfs, identity, iam, keystore
 
   before(async () => {
     ipfs = await IPFS.create({ preload: { enabled: false }, config: IPFSConfig })
 
+    iam = new PolkadotIAM()
     keystore = new Keystore()
-    access = new PolkadotAccess()
-    identities = new PolkadotIdentities()
-
-    identity = await createIdentity(identities, keystore)
+    identity = await createIdentity(iam, keystore)
 
     orbitdb = await OrbitDB.createInstance(ipfs, {
-      AccessControllers: access.AccessControllers,
+      AccessControllers: iam.AccessControllers,
       identity: identity
     })
   })
@@ -34,12 +31,10 @@ describe('Access Controller', function () {
     await identity.provider._signingKeystore.close()
     await orbitdb.disconnect()
     await ipfs.stop()
-
-    const logError = (err) => err && console.error(err)
   })
 
   it('reports the correct type', async () => {
-    assert.strictEqual(access.PolkadotAccessController.type, 'Polkadot')
+    assert.strictEqual(iam.PolkadotAccessController.type, 'Polkadot')
   })
 
   it('allows correct keys to write to the db', async () => {

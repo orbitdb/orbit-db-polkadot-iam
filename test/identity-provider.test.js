@@ -1,15 +1,15 @@
 const assert = require('assert')
-const PolkadotIdentities = require('../src/polkadot-identities')
+const PolkadotIAM = require('../src/orbit-db-polkadot-iam')
 const Keystore = require('orbit-db-keystore')
 const { createIdentity } = require('./utils')
 
-let identities, identity, keystore
+let iam, identity, keystore
 
 describe('Identity Provider', function () {
   this.timeout(10000)
 
   before(() => {
-    identities = new PolkadotIdentities()
+    iam = new PolkadotIAM()
     keystore = new Keystore()
   })
 
@@ -18,19 +18,19 @@ describe('Identity Provider', function () {
   })
 
   it('can be added to Identities as a valid identity provider', () => {
-    assert(identities.Identities.isSupported(identities.PolkadotIdentityProvider.type))
+    assert(iam.Identities.isSupported(iam.PolkadotIdentityProvider.type))
   })
 
   it('creates a valid identity object', async () => {
-    identity = await createIdentity(identities, keystore)
-    assert(await identities.PolkadotIdentityProvider.verifyIdentity(identity))
+    identity = await createIdentity(iam, keystore)
+    assert(await iam.PolkadotIdentityProvider.verifyIdentity(identity))
   })
 
   it('fails verification given an improper identity object', async () => {
-    identity = await createIdentity(identities, keystore)
+    identity = await createIdentity(iam, keystore)
     identity._id = '5GRdmMkKeKaV94qU3JjDr2ZwRAgn3xwzd2FEJYKjjSFipiAf'
     try {
-      await identities.PolkadotIdentityProvider.verifyIdentity(identity)
+      await iam.PolkadotIdentityProvider.verifyIdentity(identity)
     } catch {
       assert(true)
     }

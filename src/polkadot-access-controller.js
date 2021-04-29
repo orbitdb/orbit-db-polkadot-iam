@@ -1,23 +1,22 @@
-const AccessControllers = require('orbit-db-access-controllers');
-const PolkadotIdentities = require('./polkadot-identities');
+const { verifyIdentity } = require('./polkadot-identity-provider')
 
 class PolkadotAccessController {
-  constructor (orbitdb, identities, options) {
+  constructor (orbitdb, idProvider, options) {
     this._orbitdb = orbitdb
     this._options = options || {}
-    this.idProvider = identities.PolkadotIdentityProvider
+    this.idProvider = idProvider
   }
 
   static get type () { return 'Polkadot' }
 
-  get type() {
+  get type () {
     return this.constructor.type
   }
 
-  async canAppend(entry, identityProvider) {
+  async canAppend (entry, identityProvider) {
     const orbitIdentity = this._orbitdb.identity
     const entryIdentity = entry.identity
-    const verified = await this.idProvider.verifyIdentity(entryIdentity)
+    const verified = await verifyIdentity(entryIdentity)
 
     if (!verified) return false
     if (orbitIdentity.id !== entryIdentity.id) return false
@@ -28,8 +27,7 @@ class PolkadotAccessController {
   }
 
   static async create (orbitdb, options) {
-    const identities = new PolkadotIdentities()
-    return new PolkadotAccessController(orbitdb, identities, options)
+    return new PolkadotAccessController(orbitdb, {}, options)
   }
 
   async load (address) {
@@ -43,13 +41,4 @@ class PolkadotAccessController {
   }
 }
 
-function PolkadotAccess() {
-  AccessControllers.addAccessController({ AccessController: PolkadotAccessController })
-
-  return {
-    PolkadotAccessController,
-    AccessControllers
-  }
-}
-
-module.exports = PolkadotAccess
+module.exports = PolkadotAccessController
