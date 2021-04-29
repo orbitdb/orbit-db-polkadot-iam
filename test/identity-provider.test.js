@@ -1,9 +1,11 @@
 const assert = require('assert')
 const PolkadotIAM = require('../src/orbit-db-polkadot-iam')
+const { createIdentity } = require('../src/orbit-db-polkadot-iam')
 const Keystore = require('orbit-db-keystore')
-const { createIdentity } = require('./utils')
 
 let iam, identity, keystore
+
+const phrase = 'entire material egg meadow latin bargain dutch coral blood melt acoustic thought'
 
 describe('Identity Provider', function () {
   this.timeout(10000)
@@ -22,12 +24,13 @@ describe('Identity Provider', function () {
   })
 
   it('creates a valid identity object', async () => {
-    identity = await createIdentity(iam, keystore)
+    identity = await createIdentity(phrase, iam, keystore)
     assert(await iam.PolkadotIdentityProvider.verifyIdentity(identity))
   })
 
   it('fails verification given an improper identity object', async () => {
-    identity = await createIdentity(iam, keystore)
+    const phrase = 'entire material egg meadow latin bargain dutch coral blood melt acoustic thought'
+    identity = await createIdentity(phrase, iam, keystore)
     identity._id = '5GRdmMkKeKaV94qU3JjDr2ZwRAgn3xwzd2FEJYKjjSFipiAf'
     try {
       await iam.PolkadotIdentityProvider.verifyIdentity(identity)
