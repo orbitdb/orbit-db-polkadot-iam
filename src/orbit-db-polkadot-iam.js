@@ -3,7 +3,7 @@ const PolkadotAccessController = require('./polkadot-access-controller')
 const PolkadotIdentityProvider = require('./polkadot-identity-provider')
 const Identities = require('orbit-db-identity-provider')
 const Keystore = require('orbit-db-keystore')
-const { Keyring } = require('@polkadot/api')
+const { Keyring } = require('@polkadot/keyring')
 const { cryptoWaitReady } = require('@polkadot/util-crypto')
 
 AccessControllers.addAccessController({ AccessController: PolkadotAccessController })
