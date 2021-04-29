@@ -1,25 +1,5 @@
-# OrbitDB / Polkadot IAM _(orbit-db-polkadot-iam)_
+// The example from the README file
 
-> Identity Provider and Access Controller for Polkadot / Substrate based accounts
-
-## Install
-
-This is a [node.js](https://nodejs.org) project.
-
-```bash
-# deps
-npm install ipfs orbit-db @polkadot/api
-
-# install this package
-npm install orbit-db-polkadot-iam
-```
-
-See the [tests](https://github.com/orbitdb/orbit-db-polkadot-iam/tree/main/test)
-for examples or the following usage section.
-
-## Usage
-
-```JavaScript
 const assert = require('assert')
 const OrbitDB = require('orbit-db')
 const IPFS = require('ipfs')
@@ -56,13 +36,7 @@ const {
 
   // Only allowed accounts will be permitted to write to the db
   await db.set('foo', 'bar')
+
+  console.log(db.index)
+  process.exit()
 })()
-```
-
-## Contributing
-
-Issues and PRs welcome.
-
-## License
-
-MIT © 2021 OrbitDB Community
