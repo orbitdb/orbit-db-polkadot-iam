@@ -2,37 +2,36 @@ const AccessControllers = require('orbit-db-access-controllers')
 const PolkadotAccessController = require('./polkadot-access-controller')
 const PolkadotIdentityProvider = require('./polkadot-identity-provider')
 const Identities = require('orbit-db-identity-provider')
+const Keystore = require('orbit-db-keystore')
 const { Keyring } = require('@polkadot/api')
+const { cryptoWaitReady } = require('@polkadot/util-crypto')
 
-class PolkadotIAM {
-  constructor () {
-    AccessControllers.addAccessController({ AccessController: PolkadotAccessController })
-    Identities.addIdentityProvider(PolkadotIdentityProvider)
+AccessControllers.addAccessController({ AccessController: PolkadotAccessController })
+Identities.addIdentityProvider(PolkadotIdentityProvider)
 
-    return {
-      PolkadotAccessController,
-      PolkadotIdentityProvider,
-      AccessControllers,
-      Identities
-    }
-  }
+async function createIdentity (phrase) {
+  await cryptoWaitReady()
+  const keyring = new Keyring({ type: 'sr25519' })
+  const polkaKeys = keyring.addFromUri(phrase)
 
-  static async createIdentity (phrase, iam, keystore) {
-    const keyring = new Keyring({ type: 'sr25519' })
-    const polkaKeys = keyring.addFromUri(phrase)
+  const id = polkaKeys.address
+  const keystore = new Keystore()
+  const key = await keystore.getKey(id) || await keystore.createKey(id)
 
-    const id = polkaKeys.address
-    const key = await keystore.getKey(id) || await keystore.createKey(id)
+  const idSignature = await keystore.sign(key, id)
+  const polkaSignature = polkaKeys.sign(idSignature)
 
-    const idSignature = await keystore.sign(key, id)
-    const polkaSignature = polkaKeys.sign(idSignature)
+  const identity = await Identities.createIdentity({
+    type: 'Polkadot', id, keystore, polkaSignature, polkaKeys
+  })
 
-    const identity = await iam.Identities.createIdentity({
-      type: 'Polkadot', id, keystore, polkaSignature, polkaKeys
-    })
-
-    return identity
-  }
+  return identity
 }
 
-module.exports = PolkadotIAM
+module.exports = {
+  PolkadotAccessController,
+  PolkadotIdentityProvider,
+  AccessControllers,
+  Identities,
+  createIdentity
+}
