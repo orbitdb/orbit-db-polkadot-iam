@@ -1,5 +1,5 @@
 {
-  "name": "substrate-acl",
+  "name": "orbit-db-polkadot-iam",
   "version": "0.1.0",
   "description": "OrbitDB Identity Provider and Access Controller for Polkadot / Substrate based accounts.",
   "scripts": {
