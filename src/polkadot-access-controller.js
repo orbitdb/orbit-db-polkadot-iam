@@ -1,4 +1,5 @@
 const { verifyIdentity } = require('./polkadot-identity-provider')
+const { base58btc } = require("multiformats/bases/base58")
 
 class PolkadotAccessController {
   constructor (orbitdb, idProvider, options) {
@@ -37,7 +38,7 @@ class PolkadotAccessController {
 
   async save () {
     const cid = await this._orbitdb._ipfs.dag.put(this._options)
-    return { address: cid.toBaseEncodedString() }
+    return { address: cid.toString(base58btc) }
   }
 }
 
